@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="loginScreen">
+        <p><a href="#" onclick="atm.login()">Login</a></p>
+        <p><a href="#" onclick="atm.createAcct()">Create Account</a></p>
+    </div>
+    <div id="mainScreen" style="display:none">
+        <p><a href="#" onclick="atm.withdrawal()">Withdrawal</a></p>
+        <p><a href="#" onclick="atm.deposit()">Deposit</a></p>
+        <p><a href="#" onclick="atm.updatePin()">Update PIN</a></p>
+        <p><a href="#" onclick="atm.getBalance(atm.balance)">Get Balance</a></p>
+        <p><a href="#" onclick="atm.switchScreens()">Log Out</a></p>
+    </div>
+    <script>
+        class Atm {
+            constructor() {
+
+            }
+            login() {
+                let userPin = prompt("Enter PIN");
+                let isFound = this.pinExists(userPin);
+                if (isFound) {
+                    //valid login
+                    this.switchScreens();
+                    this.balance = isFound;
+                    this.currentPin = userPin
+                }
+                else {
+                    alert("Account not found.");
+                }
+            }
+            createAcct() {
+                let userPin = prompt("Enter PIN");
+                let isFound = this.pinExists(userPin);
+                if (isFound) {
+                    alert("Account already exists");
+                }
+                else {
+                    //create account
+                    this.switchScreens();
+                    this.balance = 0;
+                    this.currentPin = userPin;
+                    this.accounts.push({"pin":this.currentPin,"balance":this.balance});
+                    this.acctIndex = this.accounts.length-1;
+                    localStorage.setItem("accounts",JSON.stringify(this.accounts));
+                }
+            }
+            pinExists(pin) {
+                this.accounts = JSON.parse(localStorage.getItem("accounts"));
+                for (let i=0;i<this.accounts.length;i++) {
+                    if (Number(pin) === Number(this.accounts[i].pin)) {
+                        this.acctIndex = i;
+                        return this.accounts[i].balance;
+                    }
+                }
+                return false;
+            }
+            switchScreens() {
+                if (document.getElementById("loginScreen").style.display == "none") {
+                    document.getElementById("loginScreen").style.display = "block";
+                    document.getElementById("mainScreen").style.display = "none";
+                }
+                else {
+                    document.getElementById("loginScreen").style.display = "none";
+                    document.getElementById("mainScreen").style.display = "block"; 
+                }
+            }
+            getBalance(bal) {
+                alert("Current Balance: $" +bal);
+            }
+            withdrawal() {
+                this.amt = prompt("Enter withdrawal amount: ");
+                this.balance -= this.amt;
+                this.updateBalance();
+            }
+            deposit() {
+                this.amt = prompt("Enter withdrawal amount: ");
+                this.balance += Number(this.amt);
+                this.updateBalance();
+            }
+            updateBalance() {
+                this.accounts[this.acctIndex].balance = this.balance;
+                localStorage.setItem("accounts",JSON.stringify(this.accounts));
+            }
+            updatePin() {
+                this.userPin = prompt("Enter new PIN: ");
+                this.accounts[this.acctIndex].pin = this.userPin;
+                localStorage.setItem("accounts",JSON.stringify(this.accounts));
+            }
+        }
+        atm = new Atm();
+    </script>
+</body>
+</html>
