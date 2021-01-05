@@ -23,14 +23,21 @@
 
             }
             login() {
+                //create prompt to get user's pin and store in userPin variable
                 let userPin = prompt("Enter PIN");
+                /* store value evaluated by the pinExists method 
+                   in the variable isFound */
                 let isFound = this.pinExists(userPin);
+                /* if value stored in the isFound variable
+                   == true execute the following code block */
                 if (isFound) {
                     //valid login
+                    //run switchScreens method 
                     this.switchScreens();
+
                     this.balance = isFound;
                     this.currentPin = userPin
-                }
+                } //if value == false then alert user
                 else {
                     alert("Account not found.");
                 }
@@ -44,28 +51,42 @@
                 else {
                     //create account
                     this.switchScreens();
+                    //set balance of new account to zero
                     this.balance = 0;
+                    //save the newly created user pin into a variable called this.currentPin 
                     this.currentPin = userPin;
+                    //push this new account object into the array
                     this.accounts.push({"pin":this.currentPin,"balance":this.balance});
                     this.acctIndex = this.accounts.length-1;
+                    /* changing the new account info into a string and 
+                       storing it in local storage */
                     localStorage.setItem("accounts",JSON.stringify(this.accounts));
                 }
             }
             pinExists(pin) {
+                //convert accounts info in local storage from a string into objects
                 this.accounts = JSON.parse(localStorage.getItem("accounts"));
+                //loop through the accounts array in local storage 
                 for (let i=0;i<this.accounts.length;i++) {
+                    //check if the passed pin matches a pin found in local storage
                     if (Number(pin) === Number(this.accounts[i].pin)) {
                         this.acctIndex = i;
+                        //return the balance associated with this account
                         return this.accounts[i].balance;
                     }
-                }
+                } 
+                //if pin doesn't match return false
                 return false;
             }
             switchScreens() {
+                /* if the loginScreen display is equal to none(off) then set it
+                   to block(on) and then set the mainScreen display to none(off) */
                 if (document.getElementById("loginScreen").style.display == "none") {
                     document.getElementById("loginScreen").style.display = "block";
                     document.getElementById("mainScreen").style.display = "none";
                 }
+                /* else set the loginScreen display to none and set mainScreen
+                   display to block */
                 else {
                     document.getElementById("loginScreen").style.display = "none";
                     document.getElementById("mainScreen").style.display = "block"; 
@@ -75,25 +96,38 @@
                 alert("Current Balance: $" +bal);
             }
             withdrawal() {
+                //prompt user for withdrawal amount and assign it to variable this.amt
                 this.amt = prompt("Enter withdrawal amount: ");
+                //subtract this.amt from account's balance
                 this.balance -= this.amt;
+                //run updateBalance method
                 this.updateBalance();
             }
             deposit() {
                 this.amt = prompt("Enter withdrawal amount: ");
+                //add amount entered in prompt to the account's balance
                 this.balance += Number(this.amt);
+                //run updateBalance method
                 this.updateBalance();
             }
             updateBalance() {
+                //get this account's balance and assign it this new balance
                 this.accounts[this.acctIndex].balance = this.balance;
+                /* turn the account object into a string and store it 
+                   in local storage */
                 localStorage.setItem("accounts",JSON.stringify(this.accounts));
             }
             updatePin() {
                 this.userPin = prompt("Enter new PIN: ");
+                //get this account's current pin and assign it this new pin
                 this.accounts[this.acctIndex].pin = this.userPin;
+                /* turn the account object into a string and store
+                   it in local storage */
                 localStorage.setItem("accounts",JSON.stringify(this.accounts));
             }
         }
+
+        //create an instance of atm
         atm = new Atm();
     </script>
 </body>
